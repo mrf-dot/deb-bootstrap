@@ -1,29 +1,100 @@
 #!/bin/sh
 
+# Check if user is a sudoer
+is_sudo() {
+	[ `whoami` != root ] && echo "Please run this script as a superuser (sudo)" && exit 1
+}
+
+# Check if an answer is true or false
+eval_ans() {
+	echo -n "$1? [y/N] "
+	read ans
+	case $ans in
+		y* | Y* | j* | J* )	true;;
+		*)			false;;
+	esac
+}
+
+setup_tlp() {}
+
+setup_iwd() {
+	# remove wpa_supplicant and NetworkManager
+	systemctl stop wpa_supplicant
+	systemctl stop NetworkManager
+	systemctl disable wpa_supplicant
+	systemctl disable NetworkManager
+	#install dhclient config
+	systemctl enable iwd
+	systemctl enable dhclient
+	systemctl start iwd
+	systemctl start dhclient
+}
+
+login_github() {
+	gh auth login
+}
+
 # Ask questions about install
 # Questions:
 #	Are you using a laptop?
 #	Would you like to use iwd instead of NetworkManager? (If unsure select no)
 #	Which username would you like to use for git?
 #	Which email address would you like to use for git?
+#	Would you like to authorize your github account?
+ask_questions() {
+	echo -n "What is your GIT username? "
+	read username
+	echo -n "Which email do you use for git? "
+	read email
+	eval_ans "Would you like to authorize your GitHub account" && login_github
+	eval_ans "Are you using a laptop" && setup_tlp
+	eval_ans "Would you like to use iwd instead of NetworkManager" && setup_iwd
+}
 
 # Installs needed software
-sudo apt update
-sudo apt install -y aria2 ascii asciinema bat calibre cmatrix cowsay cpufetch dconf-editor default-jdk deja-dup discord exa fzf gh gnome-clocks gnome-tweaks groff htop inxi iwd lolcat mono-complete mpv ncal neofetch neovim nload nodejs npm openssh-server playerctl powertop python3-pip ranger shellcheck smartmontools supertuxkart timeshift tlp tree wine-devel winehq-devel wkhtmltopdf xcas zsh
-pip3 install ueberzug
+install_packages() {
+	apt update
+	apt install -y aria2 ascii asciinema bat calibre cmatrix cowsay cpufetch dconf-editor default-jdk deja-dup discord exa fzf gh gnome-clocks gnome-tweaks groff htop inxi iwd lolcat mono-complete mpv ncal neofetch neovim nload nodejs npm openssh-server playerctl powertop python3-pip ranger shellcheck smartmontools supertuxkart timeshift tlp tree wine-devel winehq-devel wkhtmltopdf xcas zsh
+	pip3 install ueberzug
+}
 
 # Sets up configs for gitconfig, nvim, ranger, and zsh
+install_configs() {
+	echo "[user]\\n\
+	name = $username\\n\
+	email = $email\\n\
+[core]\\n\
+	editor = nvim\\n\
+[init]\\n\
+	defaultBranch = main" > $XDG_CONFIG_HOME/git/config
+	repo="https://raw.githubusercontent.com/mrf-dot/deb-bootstrap/main"
+	aria2c -o $XDG_CONFIG_HOME/nvim/init.vim "$repo/init.vim"
+	aria2c -o $XDG_CONFIG_HOME/ranger/rc.conf "$repo/rc.conf"
+	aria2c -o $XDG_CONFIG_HOME/zsh/.zshrc "$repo/zshrc"
+	aria2c -o $HOME/.zshenv "$repo/zshenv"
+}
+
 
 # Setup nvim (vimplug and pluginstall)
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-nvim -c 'PlugInstall | quitall!' --headless
+setup_nvim() {
+	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	nvim -c 'PlugInstall | quitall!' --headless
+}
 
 # Sets default shell to zsh
-echo "/bin/zsh" | sudo chsh
+set_shell() {
+	echo "/bin/zsh" | chsh
+}
 
 # Make a backup of the system
-sudo timeshift --create
+backup() {
+	timeshift --create
+}
 
 # Show that script executed successfully
-cowsay "Congratulations! You may now enjoy your freshly installed system." | lolcat -a
+congratulate() {
+	cowsay "Congratulations! You may now enjoy your freshly installed system." | lolcat -a
+}
+
+is_sudo && install_packages && ask_questions && install_configs && setup_nvim && set_shell && backup || echo Something has gone horribly wrong
+congratulate
