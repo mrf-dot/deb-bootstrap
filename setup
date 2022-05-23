@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Ask questions about install
+# Questions:
+#	Are you using a laptop?
+#	Would you like to use iwd instead of NetworkManager? (If unsure select no)
+#	Which username would you like to use for git?
+#	Which email address would you like to use for git?
+
+# Installs needed software
+sudo apt update
+sudo apt install -y aria2 ascii asciinema bat calibre cmatrix cowsay cpufetch dconf-editor default-jdk deja-dup discord exa fzf gh gnome-clocks gnome-tweaks groff htop inxi iwd lolcat mono-complete mpv ncal neofetch neovim nload nodejs npm openssh-server playerctl powertop python3-pip ranger shellcheck smartmontools supertuxkart timeshift tlp tree wine-devel winehq-devel wkhtmltopdf xcas zsh
+pip3 install ueberzug
+
+# Sets up configs for gitconfig, nvim, ranger, and zsh
+
+# Setup nvim (vimplug and pluginstall)
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+nvim -c 'PlugInstall | quitall!' --headless
+
+# Sets default shell to zsh
+echo "/bin/zsh" | sudo chsh
+
+# Make a backup of the system
+sudo timeshift --create
+
+# Show that script executed successfully
