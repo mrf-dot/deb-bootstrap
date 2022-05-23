@@ -26,3 +26,4 @@ echo "/bin/zsh" | sudo chsh
 sudo timeshift --create
 
 # Show that script executed successfully
+cowsay "Congratulations! You may now enjoy your freshly installed system." | lolcat -a
