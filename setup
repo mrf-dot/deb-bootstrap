@@ -15,7 +15,10 @@ eval_ans() {
 	esac
 }
 
-setup_tlp() {}
+setup_tlp() {
+	systemctl enable tlp
+	systemctl start tlp
+}
 
 setup_iwd() {
 	# remove wpa_supplicant and NetworkManager
@@ -23,15 +26,32 @@ setup_iwd() {
 	systemctl stop NetworkManager
 	systemctl disable wpa_supplicant
 	systemctl disable NetworkManager
-	#install dhclient config
 	systemctl enable iwd
 	systemctl enable dhclient
 	systemctl start iwd
 	systemctl start dhclient
+	echo "Execute the following commands to get connected to the network:
+station list
+station <device> scan
+station <device> get-networks
+station <device> connect <SSID>
+exit"
+	iwctl
 }
 
-login_github() {
-	gh auth login
+setup_git() {
+	echo -n "What is your GIT username? "
+	read username
+	echo -n "Which email do you use for git? "
+	read email
+	echo "[user]\\n\
+	name = $username\\n\
+	email = $email\\n\
+[core]\\n\
+	editor = nvim\\n\
+[init]\\n\
+	defaultBranch = main" > $XDG_CONFIG_HOME/git/config
+	eval_ans "Would you like to authorize your GitHub account" && gh auth login
 }
 
 # Ask questions about install
@@ -42,11 +62,7 @@ login_github() {
 #	Which email address would you like to use for git?
 #	Would you like to authorize your github account?
 ask_questions() {
-	echo -n "What is your GIT username? "
-	read username
-	echo -n "Which email do you use for git? "
-	read email
-	eval_ans "Would you like to authorize your GitHub account" && login_github
+	setup_git
 	eval_ans "Are you using a laptop" && setup_tlp
 	eval_ans "Would you like to use iwd instead of NetworkManager" && setup_iwd
 }
@@ -60,13 +76,6 @@ install_packages() {
 
 # Sets up configs for gitconfig, nvim, ranger, and zsh
 install_configs() {
-	echo "[user]\\n\
-	name = $username\\n\
-	email = $email\\n\
-[core]\\n\
-	editor = nvim\\n\
-[init]\\n\
-	defaultBranch = main" > $XDG_CONFIG_HOME/git/config
 	repo="https://raw.githubusercontent.com/mrf-dot/deb-bootstrap/main"
 	aria2c -o $XDG_CONFIG_HOME/nvim/init.vim "$repo/init.vim"
 	aria2c -o $XDG_CONFIG_HOME/ranger/rc.conf "$repo/rc.conf"
@@ -96,5 +105,5 @@ congratulate() {
 	cowsay "Congratulations! You may now enjoy your freshly installed system." | lolcat -a
 }
 
-is_sudo && install_packages && ask_questions && install_configs && setup_nvim && set_shell && backup || echo Something has gone horribly wrong
+is_sudo && install_packages && install_configs && setup_nvim && set_shell && ask_questions && setup_nvim && set_shell && backup || echo Something has gone horribly wrong
 congratulate
