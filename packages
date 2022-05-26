@@ -1,6 +1,7 @@
 aria2
 ascii
 asciinema
+auto-cpufreq (https://github.com/AdnanHodzic/auto-cpufreq) (for laptop power saving)
 bat
 calibre
 cmatrix
@@ -37,10 +38,12 @@ shellcheck
 smartmontools
 supertuxkart
 timeshift
-tlp
 tree
+ueberzug (pip)
+w3m-img
 wine-devel
 winehq-devel
 wkhtmltopdf
 xcas
+yt-dlp
 zsh
