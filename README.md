@@ -32,12 +32,12 @@ recognized. Using this shell command all files may be relocated automatically
 
 ```sh
 git clone https://github.com/mrf-dot/deb-bootstrap
-cp -r mpv ~/.config/
-cp -r nvim ~/.config/
-cp -r ranger ~/.config/
+cp -r deb-bootstrap/mpv ~/.config/
+cp -r deb-bootstrap/nvim ~/.config/
+cp -r deb-bootstrap/ranger ~/.config/
 mkdir -p ~/.config/zsh/
-cp zshrc ~/.config/zsh/.zshrc
-cp zshenv ~/.zshenv
+cp deb-bootstrap/zshrc ~/.config/zsh/.zshrc
+cp deb-bootstrap/zshenv ~/.zshenv
 ```
 
 ## A Piece of Advice
