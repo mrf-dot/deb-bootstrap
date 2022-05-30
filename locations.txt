@@ -1,0 +1,5 @@
+nvim -> ~/.config/
+mpv -> ~/.config/
+ranger -> ~/.config/
+zshenv -> ~/.zshenv
+zshrc -> ~/.config/zsh/.zshrc
