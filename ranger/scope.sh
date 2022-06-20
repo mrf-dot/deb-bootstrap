@@ -51,18 +51,19 @@ handle_extension() {
     case "${FILE_EXTENSION_LOWER}" in
         ## Archive
         a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|\
-        rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)
-            atool --list -- "${FILE_PATH}" && exit 5
-            bsdtar --list --file "${FILE_PATH}" && exit 5
+        rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip|rar|7z)
+	    7z l -p -- "${FILE_PATH}" && exit 5
+            # atool --list -- "${FILE_PATH}" && exit 5
+            # bsdtar --list --file "${FILE_PATH}" && exit 5
             exit 1;;
-        rar)
-            ## Avoid password prompt by providing empty password
-            unrar lt -p- -- "${FILE_PATH}" && exit 5
-            exit 1;;
-        7z)
-            ## Avoid password prompt by providing empty password
-            7z l -p -- "${FILE_PATH}" && exit 5
-            exit 1;;
+        # rar)
+        #     ## Avoid password prompt by providing empty password
+        #     unrar lt -p- -- "${FILE_PATH}" && exit 5
+        #     exit 1;;
+        # 7z)
+        #     ## Avoid password prompt by providing empty password
+        #     7z l -p -- "${FILE_PATH}" && exit 5
+        #     exit 1;;
 
         ## PDF
         pdf)
@@ -203,40 +204,40 @@ handle_image() {
 
         ## Preview archives using the first image inside.
         ## (Very useful for comic book collections for example.)
-        # application/zip|application/x-rar|application/x-7z-compressed|\
-        #     application/x-xz|application/x-bzip2|application/x-gzip|application/x-tar)
-        #     local fn=""; local fe=""
-        #     local zip=""; local rar=""; local tar=""; local bsd=""
-        #     case "${mimetype}" in
-        #         application/zip) zip=1 ;;
-        #         application/x-rar) rar=1 ;;
-        #         application/x-7z-compressed) ;;
-        #         *) tar=1 ;;
-        #     esac
-        #     { [ "$tar" ] && fn=$(tar --list --file "${FILE_PATH}"); } || \
-        #     { fn=$(bsdtar --list --file "${FILE_PATH}") && bsd=1 && tar=""; } || \
-        #     { [ "$rar" ] && fn=$(unrar lb -p- -- "${FILE_PATH}"); } || \
-        #     { [ "$zip" ] && fn=$(zipinfo -1 -- "${FILE_PATH}"); } || return
-        #
-        #     fn=$(echo "$fn" | python -c "import sys; import mimetypes as m; \
-        #             [ print(l, end='') for l in sys.stdin if \
-        #               (m.guess_type(l[:-1])[0] or '').startswith('image/') ]" |\
-        #         sort -V | head -n 1)
-        #     [ "$fn" = "" ] && return
-        #     [ "$bsd" ] && fn=$(printf '%b' "$fn")
-        #
-        #     [ "$tar" ] && tar --extract --to-stdout \
-        #         --file "${FILE_PATH}" -- "$fn" > "${IMAGE_CACHE_PATH}" && exit 6
-        #     fe=$(echo -n "$fn" | sed 's/[][*?\]/\\\0/g')
-        #     [ "$bsd" ] && bsdtar --extract --to-stdout \
-        #         --file "${FILE_PATH}" -- "$fe" > "${IMAGE_CACHE_PATH}" && exit 6
-        #     [ "$bsd" ] || [ "$tar" ] && rm -- "${IMAGE_CACHE_PATH}"
-        #     [ "$rar" ] && unrar p -p- -inul -- "${FILE_PATH}" "$fn" > \
-        #         "${IMAGE_CACHE_PATH}" && exit 6
-        #     [ "$zip" ] && unzip -pP "" -- "${FILE_PATH}" "$fe" > \
-        #         "${IMAGE_CACHE_PATH}" && exit 6
-        #     [ "$rar" ] || [ "$zip" ] && rm -- "${IMAGE_CACHE_PATH}"
-        #     ;;
+         application/zip|application/x-rar|application/x-7z-compressed|\
+             application/x-xz|application/x-bzip2|application/x-gzip|application/x-tar)
+             local fn=""; local fe=""
+             local zip=""; local rar=""; local tar=""; local bsd=""
+             case "${mimetype}" in
+                 application/zip) zip=1 ;;
+                 application/x-rar) rar=1 ;;
+                 application/x-7z-compressed) ;;
+                 *) tar=1 ;;
+             esac
+             { [ "$tar" ] && fn=$(tar --list --file "${FILE_PATH}"); } || \
+             { fn=$(bsdtar --list --file "${FILE_PATH}") && bsd=1 && tar=""; } || \
+             { [ "$rar" ] && fn=$(unrar lb -p- -- "${FILE_PATH}"); } || \
+             { [ "$zip" ] && fn=$(zipinfo -1 -- "${FILE_PATH}"); } || return
+
+             fn=$(echo "$fn" | python -c "import sys; import mimetypes as m; \
+                     [ print(l, end='') for l in sys.stdin if \
+                       (m.guess_type(l[:-1])[0] or '').startswith('image/') ]" |\
+                 sort -V | head -n 1)
+             [ "$fn" = "" ] && return
+             [ "$bsd" ] && fn=$(printf '%b' "$fn")
+
+             [ "$tar" ] && tar --extract --to-stdout \
+                 --file "${FILE_PATH}" -- "$fn" > "${IMAGE_CACHE_PATH}" && exit 6
+             fe=$(echo -n "$fn" | sed 's/[][*?\]/\\\0/g')
+             [ "$bsd" ] && bsdtar --extract --to-stdout \
+                 --file "${FILE_PATH}" -- "$fe" > "${IMAGE_CACHE_PATH}" && exit 6
+             [ "$bsd" ] || [ "$tar" ] && rm -- "${IMAGE_CACHE_PATH}"
+             [ "$rar" ] && unrar p -p- -inul -- "${FILE_PATH}" "$fn" > \
+                 "${IMAGE_CACHE_PATH}" && exit 6
+             [ "$zip" ] && unzip -pP "" -- "${FILE_PATH}" "$fe" > \
+                 "${IMAGE_CACHE_PATH}" && exit 6
+             [ "$rar" ] || [ "$zip" ] && rm -- "${IMAGE_CACHE_PATH}"
+             ;;
     esac
 
     # openscad_image() {

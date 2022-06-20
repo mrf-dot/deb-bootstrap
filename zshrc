@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # abbreviations
-alias lsp="exa -lh"
+alias lsp="ls -lh --color=always"
 alias grep="grep --color"
 alias o=xdg-open
 alias zshc="$EDITOR $ZDOTDIR/.zshrc"
@@ -48,7 +48,7 @@ h() {
 
 # ping google
 p() {
-	ping google.com
+	ping 8.8.8.8
 }
 
 # Upgrade Pop-OS
@@ -80,7 +80,6 @@ rid(){
 	yes | sudo apt autoremove
 	yes | sudo apt clean all
 	yes | sudo apt autoclean
-	pkill $@
 }
 
 # Install shell scripts

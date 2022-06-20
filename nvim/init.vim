@@ -95,10 +95,34 @@ augroup END
 augroup Prose
 	autocmd!
 	autocmd BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
-	autocmd BufRead,BufNewFile *.md,*.wiki set textwidth=79
+	autocmd BufRead,BufNewFile *.ms,*.me,*.mom,*.man,*.md,*.wiki set textwidth=79
 	autocmd BufRead,BufNewFile *.md,*.wiki set nowrap
 augroup END
 
+augroup CShortcuts
+	autocmd!
+	autocmd FileType c imap _f for (int i = 0; i < z; i++) {<ESC>Fzcw
+	autocmd FileType c imap _g if (argc == 1) {
+				\<CR>help();
+				\<CR>return 1;
+				\<CR>}
+ 				\<CR>int c;
+ 				\<CR>while ((c = getopt(argc, argv, "z")) != -1)
+ 				\<CR>switch(c) {
+ 				\<CR>case 'h':
+ 				\<CR>help();
+ 				\<CR>break;
+ 				\<CR>case '?':
+ 				\<CR>default:
+ 				\<CR>return 1;
+ 				\<CR>}
+ 				\<CR>for (int i = optind; i < argc; i++)
+ 				\<CR>fprintf(stderr, "non-option argument: %s\n", argv[i]);<ESC>10kFzcwh
+	autocmd FileType c imap _m int
+				\<CR>main(int argc, char **argv) {
+					\<CR>return 0;
+					\<CR>}<ESC>kO
+augroup END
 augroup JavaShortcuts
 	autocmd!
 	autocmd FileType java imap <silent> _xc <C-R>=expand('%:t:r')<CR>
