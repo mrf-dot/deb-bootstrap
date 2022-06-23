@@ -9,6 +9,16 @@ This repository is primarily composed of three parts:
 1. A list of packages installed on my system
 2. Config files that are used on my system
 3. The location of where the config files should be located
+4. An automated install script
+
+## Automated install
+
+To complete all the instructions listed in this README automatically, execute
+the following command.
+
+```sh
+curl https://raw.githubusercontent.com/mrf-dot/deb-bootstrap/main/install.sh | sh
+```
 
 ## Intended Audience
 
@@ -29,14 +39,14 @@ Google Earth:
 sudo apt-get update
 wget "https://dl.google.com/dl/earth/client/current/google-earth-stable_current_amd64.deb" -O /tmp/google-earth-stable.deb
 sudo dpkg -i /tmp/google-earth-stable.deb
-
+sudo apt-get upgrade -y
 ```
 
 Powershell:
 
 ```sh
 sudo apt-get update
-wget -O "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" -O /tmp/microsoft-prod.deb
+wget "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" -O /tmp/microsoft-prod.deb
 sudo dpkg -i /tmp/microsoft-prod.deb
 sudo apt-get update
 sudo apt-get install -y powershell
