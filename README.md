@@ -19,7 +19,40 @@ in multiple locations in the event of an issue.
 
 The file `packages.txt` contains a list of packages installed on my system. You
 should go through the file, line by line, and decide which files you would like
-to install on your system.
+to install on your system. Two packages that I have installed require more
+setup than simply using `apt install`. I have noted the install process for
+these packages below.
+
+Google Earth:
+
+```sh
+sudo apt-get update
+wget "https://dl.google.com/dl/earth/client/current/google-earth-stable_current_amd64.deb" -O /tmp/google-earth-stable.deb
+sudo dpkg -i /tmp/google-earth-stable.deb
+
+```
+
+Powershell:
+
+```sh
+sudo apt-get update
+wget -O "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" -O /tmp/microsoft-prod.deb
+sudo dpkg -i /tmp/microsoft-prod.deb
+sudo apt-get update
+sudo apt-get install -y powershell
+```
+
+Ueberzug:
+
+```sh
+pip3 install ueberzug
+```
+
+Wine:
+
+```sh
+sudo apt --install-recommends install winehq-devel
+```
 
 ## Configuration Files
 
